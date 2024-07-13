@@ -1,30 +1,34 @@
 name: Build and Deploy
- 
+
 on:
   push:
     branches:
-      - main  # 或者你的默认开发分支
- 
+      - main # 或者你的默认开发分支
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
- 
+
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
- 
+        uses: actions/checkout@v4
+        with:
+          uses: pnpm/action-setup@v3 # 如果使用 pnpm，请取消注释
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm # 或 pnpm / yarn
       - name: Install Dependencies
         run: |
-          npm install
+          pnpm install
           # 如果是其他构建工具，比如 Maven, Gradle, 替换上面的命令
       - name: Build
-        run: |
-          npm run docs:build
-          # 如果是其他构建命令，替换上面的命令
+        run: pnpm docs:build # 如果是其他构建命令，替换上面的命令
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/.vitepress/dist
+          path: .vitepress/dist
       - name: Deploy via SSH
         uses: easingthemes/ssh-deploy@v2.1.5
         env:
@@ -33,6 +37,6 @@ jobs:
           SOURCE: "./"
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          REMOTE_PORT: ${{ secrets.REMOTE_PORT }}  # 默认是 ssh 端口，可以不填
-          TARGET: "/home/nginx/vitepress"  # 服务器上的目标路径
- 
+          REMOTE_PORT: ${{ secrets.REMOTE_PORT }} # 默认是 ssh 端口，可以不填
+          TARGET: "/home/nginx/vitepress" # 服务器上的目标路径
+
