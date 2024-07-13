@@ -14,19 +14,12 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          uses: pnpm/action-setup@v3 # 如果使用 pnpm，请取消注释
-      - name: setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm # 或 pnpm / yarn
       - name: Install Dependencies
         run: |
-          pnpm install
+          npm install
           # 如果是其他构建工具，比如 Maven, Gradle, 替换上面的命令
       - name: Build
-        run: pnpm docs:build # 如果是其他构建命令，替换上面的命令
+        run: npm run docs:build # 如果是其他构建命令，替换上面的命令
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
